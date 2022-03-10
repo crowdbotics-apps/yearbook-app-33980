@@ -34,12 +34,12 @@ class RecappVideosSerializer(serializers.ModelSerializer):
 
 
 class RecappSerializer(serializers.ModelSerializer):
-    quotes = RecappQuotesSerializer(many=True)
-    videos = RecappVideosSerializer(many=True)
+    # quotes = RecappQuotesSerializer(many=True)
+    # videos = RecappVideosSerializer(many=True)
 
     class Meta:
         model=Recapp
-        fields=['user','high_school','recapp','recapp_cover','quotes','videos','recapp_year','zip_code','is_approved']
+        fields=['user','high_school','recapp','recapp_cover','recapp_year','zip_code','is_approved']
         
         extra_kwargs ={
             'user':{'read_only':True},
@@ -48,23 +48,23 @@ class RecappSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.context['request'].user
-        quotes_data = validated_data.pop('quotes')
-        videos_data = validated_data.pop('videos')
+        # quotes_data = validated_data.pop('quotes')
+        # videos_data = validated_data.pop('videos')
 
         recapp = Recapp.objects.create(
             user=user, 
             **validated_data
         )
 
-        print(validated_data)
+        # print(validated_data)
 
-        for quote in quotes_data:
-            q= RecappQuotes.objects.create(recapp=recapp,quotes=quote)
-            recapp.quotes.add(q)
+        # for quote in quotes_data:
+        #     q= RecappQuotes.objects.create(recapp=recapp,quotes=quote)
+        #     recapp.quotes.add(q)
 
-        for video in videos_data:
-            v = RecappVideos.objects.create(recapp=recapp,videos=video)
-            recapp.videos.add(v)
+        # for video in videos_data:
+        #     v = RecappVideos.objects.create(recapp=recapp,videos=video)
+        #     recapp.videos.add(v)
         
         return recapp
 
@@ -79,8 +79,11 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=PurchaseRecapp
-        fields='__all__'
-
+        fields=('__all__')
+        extra_kwargs = {
+            'user': {'read_only': True},
+            'status':{'read_only': True},
+        }
     
     def create(self,validated_data):
         user = self.context['request'].user

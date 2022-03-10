@@ -29,6 +29,7 @@ class PurchaseRecapp(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     cardholder_name = models.CharField(max_length=50)
+    card_number = models.CharField(max_length=16)
     expiry = models.DateField()
     cvc= models.CharField(max_length=4)
     status = models.CharField(max_length=10)
