@@ -26,11 +26,14 @@ class RecappVideos(models.Model):
 
 class PurchaseRecapp(models.Model):
     user = models.ForeignKey('users.User',on_delete=models.CASCADE)
+    status = models.CharField(max_length=10)
+    recapp = models.ForeignKey('Recapp',on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+
+class CreditCards(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     cardholder_name = models.CharField(max_length=50)
     card_number = models.CharField(max_length=16)
     expiry = models.DateField()
     cvc= models.CharField(max_length=4)
-    status = models.CharField(max_length=10)
-    recapp = models.ForeignKey('Recapp',on_delete=models.CASCADE)
