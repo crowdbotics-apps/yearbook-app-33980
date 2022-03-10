@@ -15,6 +15,7 @@ class Recapp(models.Model):
     recapp_year = models.CharField(max_length=10)
     is_approved = models.BooleanField(default=False)
     zip_code = models.IntegerField(blank=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
 
 class RecappQuotes(models.Model):
     recapp = models.ForeignKey('Recapp',on_delete=models.CASCADE)
@@ -28,7 +29,6 @@ class PurchaseRecapp(models.Model):
     user = models.ForeignKey('users.User',on_delete=models.CASCADE)
     status = models.CharField(max_length=10)
     recapp = models.ForeignKey('Recapp',on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
 
 class CreditCards(models.Model):
     first_name = models.CharField(max_length=20)

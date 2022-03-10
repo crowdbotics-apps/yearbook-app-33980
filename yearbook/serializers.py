@@ -41,7 +41,7 @@ class RecappSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Recapp
-        fields=['user','high_school','recapp','recapp_cover','recapp_year','zip_code','is_approved']
+        fields=['user','high_school','recapp','recapp_cover','price','recapp_year','zip_code','is_approved']
         
         extra_kwargs ={
             'user':{'read_only':True},
@@ -89,7 +89,7 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=PurchaseRecapp
-        fields=('first_name','last_name','cvc','expiry','card_number','cardholder_name','recapp','recapp_id','price','user','status')
+        fields=('first_name','last_name','cvc','expiry','card_number','cardholder_name','recapp','recapp_id','user','status')
         extra_kwargs = {
             'user': {'read_only': True},
             'status':{'read_only': True},
