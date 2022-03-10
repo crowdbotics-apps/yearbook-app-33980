@@ -281,3 +281,13 @@ ADMINS=(
 
 DEFAULT_FROM_EMAIL = 'swornim.shrestha@crowdbotics.com'
 EMAIL_FROM='swornim.shrestha@crowdbotics.com'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+               'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES':(
+            "rest_framework.permissions.AllowAny",
+    ),
+
+}
