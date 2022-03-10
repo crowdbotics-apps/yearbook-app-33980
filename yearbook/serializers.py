@@ -75,7 +75,7 @@ class HighSchoolSerializer(serializers.ModelSerializer):
         fields=('__all__')
 
 class PurchaseRecappSerializer(serializers.ModelSerializer):
-
+    recapp = RecappSerializer()
     class Meta:
         model=PurchaseRecapp
         fields=('__all__')

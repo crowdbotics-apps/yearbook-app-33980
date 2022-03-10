@@ -33,3 +33,4 @@ class PurchaseRecapp(models.Model):
     expiry = models.DateField()
     cvc= models.CharField(max_length=4)
     status = models.CharField(max_length=10)
+    recapp = models.ForeignKey('Recapp',on_delete=models.CASCADE)
