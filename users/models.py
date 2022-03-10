@@ -17,10 +17,35 @@ class User(AbstractUser):
     This model represents the User instance of the system, login system and
     everything that relates with an `User` is represented by this model.
     """
-
-    # First Name and Last Name do not cover name patterns
-    # around the globe.
-    name = models.CharField(_("Name of User"), blank=True, null=True, max_length=255)
+    name = models.CharField(
+        null=True,
+        blank=True,
+        max_length=255,
+    )
+    lname = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+    )
+    dob = models.DateField(
+        null=True,
+        blank=True,
+    )
+    high_school = models.ForeignKey(
+        'yearbook.HighSchool',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE
+    )
+    address = models.TextField(
+        null=True,
+        blank=True,
+    )
+    zip_code = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+    )
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})
