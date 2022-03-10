@@ -68,7 +68,6 @@ class RecappSerializer(serializers.ModelSerializer):
         
         return recapp
 
-
 class HighSchoolSerializer(serializers.ModelSerializer):
 
     class Meta:

@@ -11,6 +11,7 @@ from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 from rest_framework.parsers import  MultiPartParser, FormParser, JSONParser
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
 
 class UploadHighSchoolIdViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -59,6 +60,12 @@ class RecappViewSet(ModelViewSet):
     serializer_class = RecappSerializer
     queryset = Recapp.objects.all()
     # http_method_names=['post']
+
+    @action(detail=False, methods=["get"],url_path=r'highschool/(?P<highschool_id>\d+)')
+    def highschool(self,request, *args, **kwargs):
+        recapps = self.queryset.filter(high_school=self.kwargs['highschool_id'])
+        seriralizer = self.serializer_class(recapps,many=True)
+        return Response(seriralizer.data)
 
 class HighSchoolsViewset(ModelViewSet):
     serializer_class = HighSchoolSerializer
