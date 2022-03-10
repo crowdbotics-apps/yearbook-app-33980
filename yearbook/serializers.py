@@ -25,12 +25,12 @@ class HighSchoolIdSerializer(serializers.ModelSerializer):
 class RecappQuotesSerializer(serializers.ModelSerializer):
     class Meta:
         model=RecappQuotes
-        fields='__all__'
+        fields=('__all__')
 
 class RecappVideosSerializer(serializers.ModelSerializer):
     class Meta:
         model=RecappVideos
-        fields='__all__'
+        fields=('__all__')
 
 
 class RecappSerializer(serializers.ModelSerializer):

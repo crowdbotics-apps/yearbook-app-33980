@@ -9,7 +9,7 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
-from rest_framework.parsers import MultiPartParser
+from rest_framework.parsers import  MultiPartParser, FormParser, JSONParser
 from django.shortcuts import get_object_or_404
 
 class UploadHighSchoolIdViewSet(ModelViewSet):
@@ -55,7 +55,7 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
 class RecappViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
-    parser_classes = (MultiPartParser,)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
     serializer_class = RecappSerializer
     queryset = Recapp.objects.all()
     # http_method_names=['post']
@@ -83,7 +83,7 @@ class PurchaseRecappViewSet(ModelViewSet):
     queryset = PurchaseRecapp.objects.all()
 
     def list(self, request):
-        queryset = PurchaseRecapp.objects.all()
+        queryset = PurchaseRecapp.objects.filter(user=request.user)
         serializer = PurchaseRecappSerializer(queryset, many=True)
         return Response(serializer.data)
 
