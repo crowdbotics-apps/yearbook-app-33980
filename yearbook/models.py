@@ -31,6 +31,7 @@ class PurchaseRecapp(models.Model):
     recapp = models.ForeignKey('Recapp',on_delete=models.CASCADE)
 
 class CreditCards(models.Model):
+    user = models.ForeignKey('users.User',on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     cardholder_name = models.CharField(max_length=50)

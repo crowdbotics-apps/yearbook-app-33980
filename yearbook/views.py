@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
-from .models import HighSchool, HighSchoolID, PurchaseRecapp, Recapp
-from .serializers import HighSchoolIdSerializer, HighSchoolSerializer, PurchaseRecappSerializer, RecappSerializer
+from .models import CreditCards, HighSchool, HighSchoolID, PurchaseRecapp, Recapp
+from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, PurchaseRecappSerializer, RecappSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
@@ -97,5 +97,22 @@ class PurchaseRecappViewSet(ModelViewSet):
     def retrieve(self, request, pk=None):
         queryset = PurchaseRecapp.objects.all()
         purchase = get_object_or_404(queryset, id=pk)
-        serializer = HighSchoolSerializer(purchase)
+        serializer = PurchaseRecappSerializer(purchase)
+        return Response(serializer.data)
+
+class CreditCardsViewset(ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+
+    serializer_class = CreditCardsSerializer
+    queryset = CreditCards.objects.all()
+
+    def list(self, request):
+        queryset = CreditCards.objects.filter(user=request.user)
+        serializer = CreditCardsSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = CreditCards.objects.all()
+        purchase = get_object_or_404(queryset, id=pk)
+        serializer = CreditCardsSerializer(purchase)
         return Response(serializer.data)

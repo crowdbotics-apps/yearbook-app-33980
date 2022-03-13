@@ -98,7 +98,6 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
     
     def create(self,validated_data):
         user = self.context['request'].user
-        print(validated_data)
         first_name = validated_data.pop('first_name')
         last_name = validated_data.pop('last_name')
         cvc = validated_data.pop('cvc')
@@ -116,3 +115,16 @@ class CreditCardsSerializer(serializers.ModelSerializer):
     class Meta:
         model=CreditCards
         fields=('__all__')
+        extra_kwargs ={
+            'user':{'read_only':True},
+            'is_approved':{'read_only':True}
+        }
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+
+        cc = CreditCards.objects.create(
+            user=user, 
+            **validated_data
+        )
+        return cc
