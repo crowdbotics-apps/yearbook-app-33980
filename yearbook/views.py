@@ -1,8 +1,9 @@
 from django.shortcuts import render
+from users.models import User
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
 from .models import CreditCards, HighSchool, HighSchoolID, PurchaseRecapp, Recapp
-from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, PurchaseRecappSerializer, RecappSerializer
+from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, PurchaseRecappSerializer, RecappSerializer, StudentSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
@@ -116,3 +117,24 @@ class CreditCardsViewset(ModelViewSet):
         purchase = get_object_or_404(queryset, id=pk)
         serializer = CreditCardsSerializer(purchase)
         return Response(serializer.data)
+
+class StudentsViewset(ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class= StudentSerializer
+    queryset = User.objects.filter(is_superuser=False, is_staff=False)
+
+    @action(detail=False, methods=["put"],url_path=r'suspend/(?P<student_id>\d+)')
+    def suspend(self,request, *args, **kwargs):
+        student = self.queryset.get(id=self.kwargs['student_id'])
+        student.status="suspended"
+        student.save()
+        seriralizer = self.serializer_class(student)
+        return Response(seriralizer.data)
+    
+    @action(detail=False, methods=["put"],url_path=r'active/(?P<student_id>\d+)')
+    def active(self,request, *args, **kwargs):
+        student = self.queryset.get(id=self.kwargs['student_id'])
+        student.status="active"
+        student.save()
+        seriralizer = self.serializer_class(student)
+        return Response(seriralizer.data)

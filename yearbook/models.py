@@ -6,6 +6,7 @@ class HighSchool(models.Model):
 class HighSchoolID(models.Model):
     user = models.ForeignKey('users.User',on_delete=models.CASCADE)
     file = models.FileField(blank=True,default='')
+    status = models.CharField(max_length=10,default='pending')
 
 class Recapp(models.Model):
     user = models.ForeignKey('users.User',on_delete=models.CASCADE)
@@ -13,9 +14,9 @@ class Recapp(models.Model):
     recapp = models.FileField(blank=True,default='')
     recapp_cover = models.ImageField(blank=True,default='')
     recapp_year = models.CharField(max_length=10)
-    is_approved = models.BooleanField(default=False)
     zip_code = models.IntegerField(blank=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
+    status = models.CharField(max_length=10,default='pending')
 
 class RecappQuotes(models.Model):
     recapp = models.ForeignKey('Recapp',on_delete=models.CASCADE)

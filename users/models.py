@@ -46,6 +46,11 @@ class User(AbstractUser):
         null=True,
         blank=True,
     )
-
+    status = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+        default='pending'
+    )
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})

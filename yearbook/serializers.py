@@ -10,6 +10,8 @@ from .models import (
     RecappVideos
 )
 
+from users.models import User
+
 class HighSchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model=HighSchool
@@ -128,3 +130,9 @@ class CreditCardsSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return cc
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code","status"]
+        

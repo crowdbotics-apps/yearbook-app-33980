@@ -16,13 +16,14 @@ User = get_user_model()
 class SignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "email","password","name","lname","username","dob","high_school","address","zip_code")
+        fields = ("id", "email","password","name","lname","username","dob","high_school","address","zip_code","status")
         extra_kwargs = {
             "password": {"write_only": True, "style": {"input_type": "password"}},
             "username": {
                 "required": True,
                 "allow_blank": False,
             },
+            "status":{"read_only":True}
         }
 
     def _get_request(self):
@@ -64,7 +65,8 @@ class SignupSerializer(serializers.ModelSerializer):
             dob=validated_data.get("dob"),
             high_school=validated_data.get("high_school"),
             address=validated_data.get("address"),
-            zip_code=validated_data.get("zip_code")
+            zip_code=validated_data.get("zip_code"),
+            status='active'
         )
         user.set_password(validated_data.get("password"))
         user.save()
@@ -80,7 +82,7 @@ class SignupSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code"]
+        fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code","status"]
 
 
 class PasswordSerializer(PasswordResetSerializer):
