@@ -61,6 +61,10 @@ class RecappViewSet(ModelViewSet):
     serializer_class = RecappSerializer
     queryset = Recapp.objects.all()
     # http_method_names=['post']
+    def list(self, request):
+        queryset = Recapp.objects.filter(high_school=request.user.high_school)
+        serializer = RecappSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     @action(detail=False, methods=["get"],url_path=r'highschool/(?P<highschool_id>\d+)')
     def highschool(self,request, *args, **kwargs):
