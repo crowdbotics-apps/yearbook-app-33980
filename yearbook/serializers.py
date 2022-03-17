@@ -135,4 +135,13 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code","status"]
-        
+
+class ReportsSerializer(serializers.Serializer):
+    user_retention = serializers.IntegerField()
+    new_users = serializers.IntegerField()
+    registration_pd = serializers.IntegerField()
+    registraton_pw = serializers.IntegerField()
+    registration_pm = serializers.IntegerField()
+    online_users = serializers.IntegerField()
+    sold_recapps = serializers.IntegerField()
+    

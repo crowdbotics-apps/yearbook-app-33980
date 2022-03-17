@@ -142,3 +142,6 @@ class StudentsViewset(ModelViewSet):
         student.save()
         seriralizer = self.serializer_class(student)
         return Response(seriralizer.data)
+
+
+# class ReportsViewset(ViewSet):

@@ -267,8 +267,8 @@ if GS_BUCKET_NAME:
 DJANGO_REST_PASSWORDRESET_TOKEN_CONFIG = {
     "CLASS": "django_rest_passwordreset.tokens.RandomNumberTokenGenerator",
     "OPTIONS": {
-        "min_number": 1000,
-        "max_number": 9999
+        "min_number": 100000,
+        "max_number": 999999
     }
 }
 
