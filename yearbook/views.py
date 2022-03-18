@@ -13,6 +13,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 from rest_framework.parsers import  MultiPartParser, FormParser, JSONParser
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
+import stripe
 
 class UploadHighSchoolIdViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -105,6 +106,20 @@ class PurchaseRecappViewSet(ModelViewSet):
         serializer = PurchaseRecappSerializer(purchase)
         return Response(serializer.data)
 
+    def perform_create(self,serializer):
+        stripe.api_key = 'sk_test_51KeejWDUTAU1FowaGozzaiy2ghoEY9Eiiv7EiZrXYxuUdEPVffEyZbyjtO3KIrxFLb6VSTor3wKsVlWgcEzejJF2005omCIkWQ'
+
+        test_payment_intent = stripe.PaymentIntent.create(
+                                amount=1000, currency='usd', 
+                                payment_method_types=['card'],
+                                receipt_email='test@example.com',
+                                payment_method="4242 4242 4242 4242",
+                                confirm=True)
+        if(test_payment_intent):
+            serializer.save()
+        else:
+            serializer.save()
+
 class CreditCardsViewset(ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
@@ -143,5 +158,10 @@ class StudentsViewset(ModelViewSet):
         seriralizer = self.serializer_class(student)
         return Response(seriralizer.data)
 
+    @action(detail=False, methods=["get"],url_path=r'me')
+    def me(self,request, *args, **kwargs):
+        student = self.queryset.get(id=request.user.id)
+        seriralizer = self.serializer_class(student)
+        return Response(seriralizer.data)
 
 # class ReportsViewset(ViewSet):

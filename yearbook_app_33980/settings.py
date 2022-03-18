@@ -86,6 +86,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'drf_yasg',
     'storages',
+    'stripe'
 ]
 MODULES_APPS = get_modules()
 
@@ -188,7 +189,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # allauth / users
 ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "username"
-ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "optional"
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
@@ -291,3 +292,10 @@ REST_FRAMEWORK = {
     ),
 
 }
+
+if DEBUG:
+    STRIPE_PUBLISHABLE_KEY = 'pk_test_51KeejWDUTAU1FowaL9TkmlkNtHdvG2f1OwLKiX5dqlpFNmU0yutykFC6X2cmRh3S0TT5hKD9pzTxVa57O2jcBuMf00Mhz81zzT'
+    STRIPE_SECRET_KEY = 'sk_test_51KeejWDUTAU1FowaGozzaiy2ghoEY9Eiiv7EiZrXYxuUdEPVffEyZbyjtO3KIrxFLb6VSTor3wKsVlWgcEzejJF2005omCIkWQy'
+else:
+    STRIPE_PUBLISHABLE_KEY = 'pk_test_51KeejWDUTAU1FowaL9TkmlkNtHdvG2f1OwLKiX5dqlpFNmU0yutykFC6X2cmRh3S0TT5hKD9pzTxVa57O2jcBuMf00Mhz81zzT'
+    STRIPE_SECRET_KEY = 'sk_test_51KeejWDUTAU1FowaGozzaiy2ghoEY9Eiiv7EiZrXYxuUdEPVffEyZbyjtO3KIrxFLb6VSTor3wKsVlWgcEzejJF2005omCIkWQy'

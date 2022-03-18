@@ -125,6 +125,8 @@ class CreditCardsSerializer(serializers.ModelSerializer):
         model=CreditCards
         fields=('__all__')
         extra_kwargs ={
+            'first_name':{'required':False},
+            'last_name':{'required':False},
             'user':{'read_only':True},
             'is_approved':{'read_only':True},
             'card_number':{'write_only':True},
