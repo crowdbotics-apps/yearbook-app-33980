@@ -85,7 +85,7 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(write_only=True)
     last_name = serializers.CharField(write_only=True)
     cvc = serializers.CharField(write_only=True)
-    expiry = serializers.DateField(write_only=True)
+    expiry = serializers.DateField(write_only=True,input_formats=['%m/%y'])
     card_number = serializers.CharField(write_only=True)
     cardholder_name = serializers.CharField(write_only=True)
 
@@ -114,13 +114,23 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
         return purchase
 
 class CreditCardsSerializer(serializers.ModelSerializer):
+    expiry = serializers.DateField(format='%m/%y')
+    card_number_hidden = serializers.SerializerMethodField('get_card_number')
+    
     class Meta:
         model=CreditCards
         fields=('__all__')
         extra_kwargs ={
             'user':{'read_only':True},
-            'is_approved':{'read_only':True}
+            'is_approved':{'read_only':True},
+            'card_number':{'write_only':True},
+            'cvc':{'write_only':True},
+            'card_number_hidde':{'read_only':True}
         }
+    
+    def get_card_number(self,cc):
+        return 'XXXXXXXXXXXX'+cc.card_number[12:]
+
 
     def create(self, validated_data):
         user = self.context['request'].user
