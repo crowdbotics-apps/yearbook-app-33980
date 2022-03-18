@@ -94,6 +94,7 @@ INSTALLED_APPS += LOCAL_APPS + THIRD_PARTY_APPS + MODULES_APPS
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -301,3 +302,5 @@ if DEBUG:
 else:
     STRIPE_PUBLISHABLE_KEY = 'pk_test_51KeejWDUTAU1FowaL9TkmlkNtHdvG2f1OwLKiX5dqlpFNmU0yutykFC6X2cmRh3S0TT5hKD9pzTxVa57O2jcBuMf00Mhz81zzT'
     STRIPE_SECRET_KEY = 'sk_test_51KeejWDUTAU1FowaGozzaiy2ghoEY9Eiiv7EiZrXYxuUdEPVffEyZbyjtO3KIrxFLb6VSTor3wKsVlWgcEzejJF2005omCIkWQy'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
