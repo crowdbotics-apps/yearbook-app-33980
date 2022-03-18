@@ -1,4 +1,8 @@
 from django.db import models
+import random
+
+def code_generator():
+    return ''.join(random.choice('0123456789ABCDEF') for i in range(16))
 
 class HighSchool(models.Model):
     name = models.CharField(max_length=30)
@@ -6,7 +10,8 @@ class HighSchool(models.Model):
 class HighSchoolID(models.Model):
     user = models.ForeignKey('users.User',on_delete=models.CASCADE)
     file = models.FileField(blank=True,default='')
-    status = models.CharField(max_length=10,default='pending')
+    code = models.CharField(max_length=16,default=code_generator)
+    status = models.CharField(max_length=16,default='pending')
 
 class Recapp(models.Model):
     user = models.ForeignKey('users.User',on_delete=models.CASCADE)

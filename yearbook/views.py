@@ -162,6 +162,7 @@ class StudentsViewset(ModelViewSet):
     def me(self,request, *args, **kwargs):
         student = self.queryset.get(id=request.user.id)
         seriralizer = self.serializer_class(student)
+        seriralizer.data.test ="a"
         return Response(seriralizer.data)
 
 # class ReportsViewset(ViewSet):

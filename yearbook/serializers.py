@@ -148,9 +148,20 @@ class CreditCardsSerializer(serializers.ModelSerializer):
         return cc
 
 class StudentSerializer(serializers.ModelSerializer):
+    high_school_code = serializers.SerializerMethodField('get_high_school_code')
+    high_school = HighSchoolSerializer()
     class Meta:
         model = User
-        fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code","status"]
+        fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code","status","photo","high_school_code"]
+        extra_kwargs ={
+            'high_school_code':{'read_only':True},
+        }
+    def get_high_school_code(self,student):
+        try:
+            code = HighSchoolID.objects.get(user=student.id).code
+            return code
+        except:
+            return ""
 
 class ReportsSerializer(serializers.Serializer):
     user_retention = serializers.IntegerField()
