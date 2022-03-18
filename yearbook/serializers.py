@@ -40,14 +40,17 @@ class RecappVideosSerializer(serializers.ModelSerializer):
 class RecappSerializer(serializers.ModelSerializer):
     # quotes = RecappQuotesSerializer(many=True)
     # videos = RecappVideosSerializer(many=True)
+    high_school = HighSchoolSerializer(read_only=True)
+    high_school_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model=Recapp
-        fields=['id','user','high_school','recapp','recapp_cover','price','recapp_year','zip_code','status']
+        fields=['id','user','high_school','high_school_id','recapp','recapp_cover','price','recapp_year','zip_code','status']
         
         extra_kwargs ={
             'user':{'read_only':True},
-            'status':{'read_only':True}
+            'status':{'read_only':True},
+            'high_school_id':{'write_only': True},
         }
 
     def create(self, validated_data):
@@ -91,11 +94,12 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=PurchaseRecapp
-        fields=('id','first_name','last_name','cvc','expiry','card_number','cardholder_name','recapp','recapp_id','user','status')
+        fields=('id','first_name','last_name','cvc','expiry','card_number','cardholder_name','recapp','recapp_id','user','status','purchased_at')
         extra_kwargs = {
             'user': {'read_only': True},
             'status':{'read_only': True},
             'recapp_id':{'write_only': True},
+            'purchased_at':{'read_only':True}
         }
     
     def create(self,validated_data):

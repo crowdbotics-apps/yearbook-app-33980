@@ -30,6 +30,7 @@ class PurchaseRecapp(models.Model):
     user = models.ForeignKey('users.User',on_delete=models.CASCADE)
     status = models.CharField(max_length=10)
     recapp = models.ForeignKey('Recapp',on_delete=models.CASCADE)
+    purchased_at = models.DateTimeField(auto_now_add=True)
 
 class CreditCards(models.Model):
     user = models.ForeignKey('users.User',on_delete=models.CASCADE)
