@@ -106,19 +106,19 @@ class PurchaseRecappViewSet(ModelViewSet):
         serializer = PurchaseRecappSerializer(purchase)
         return Response(serializer.data)
 
-    def perform_create(self,serializer):
-        stripe.api_key = 'sk_test_51KeejWDUTAU1FowaGozzaiy2ghoEY9Eiiv7EiZrXYxuUdEPVffEyZbyjtO3KIrxFLb6VSTor3wKsVlWgcEzejJF2005omCIkWQ'
+    # def perform_create(self,serializer):
+    #     stripe.api_key = 'sk_test_51KeejWDUTAU1FowaGozzaiy2ghoEY9Eiiv7EiZrXYxuUdEPVffEyZbyjtO3KIrxFLb6VSTor3wKsVlWgcEzejJF2005omCIkWQ'
 
-        test_payment_intent = stripe.PaymentIntent.create(
-                                amount=1000, currency='usd', 
-                                payment_method_types=['card'],
-                                receipt_email='test@example.com',
-                                payment_method="4242 4242 4242 4242",
-                                confirm=True)
-        if(test_payment_intent):
-            serializer.save()
-        else:
-            serializer.save()
+    #     test_payment_intent = stripe.PaymentIntent.create(
+    #                             amount=1000, currency='usd', 
+    #                             payment_method_types=['card'],
+    #                             receipt_email='test@example.com',
+    #                             payment_method="4242 4242 4242 4242",
+    #                             confirm=True)
+    #     if(test_payment_intent):
+    #         serializer.save()
+    #     else:
+    #         serializer.save()
 
 class CreditCardsViewset(ModelViewSet):
     permission_classes = (IsAuthenticated,)
