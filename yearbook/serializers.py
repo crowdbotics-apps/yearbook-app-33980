@@ -43,11 +43,11 @@ class RecappSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Recapp
-        fields=['user','high_school','recapp','recapp_cover','price','recapp_year','zip_code','is_approved']
+        fields=['id','user','high_school','recapp','recapp_cover','price','recapp_year','zip_code','status']
         
         extra_kwargs ={
             'user':{'read_only':True},
-            'is_approved':{'read_only':True}
+            'status':{'read_only':True}
         }
 
     def create(self, validated_data):
@@ -91,7 +91,7 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=PurchaseRecapp
-        fields=('first_name','last_name','cvc','expiry','card_number','cardholder_name','recapp','recapp_id','user','status')
+        fields=('id','first_name','last_name','cvc','expiry','card_number','cardholder_name','recapp','recapp_id','user','status')
         extra_kwargs = {
             'user': {'read_only': True},
             'status':{'read_only': True},
@@ -107,7 +107,7 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
         card_number = validated_data.pop('card_number')
         cardholder_name = validated_data.pop('cardholder_name')
 
-        CreditCards.objects.create(first_name=first_name,last_name=last_name,cvc=cvc,expiry=expiry,card_number=card_number,cardholder_name=cardholder_name)
+        CreditCards.objects.create(first_name=first_name,last_name=last_name,cvc=cvc,expiry=expiry,card_number=card_number,cardholder_name=cardholder_name,user=user)
 
         purchase = PurchaseRecapp.objects.create(user=user,**validated_data,status='done')
         
