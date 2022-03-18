@@ -21,9 +21,10 @@ class HighSchoolIdSerializer(serializers.ModelSerializer):
     
     class Meta:
         model=HighSchoolID
-        fields=['user','file']
+        fields=['user','file','code']
         extra_kwargs = {
             'user': {'read_only': True},
+            'code': {'read_only': True},
         }
 
 class RecappQuotesSerializer(serializers.ModelSerializer):
