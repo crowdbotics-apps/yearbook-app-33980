@@ -276,11 +276,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/' # 'http://myhost:port/media/'
 
 ADMINS=(
-    ('You','tannerblangley@re-capp.com')
+    ('You','swornim.shrestha@crowdbotics.com')
 )
 
-DEFAULT_FROM_EMAIL = 'tannerblangley@re-capp.com'
-EMAIL_FROM='tannerblangley@re-capp.com'
+DEFAULT_FROM_EMAIL = 'swornim.shrestha@crowdbotics.com'
+EMAIL_FROM='swornim.shrestha@crowdbotics.com'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
