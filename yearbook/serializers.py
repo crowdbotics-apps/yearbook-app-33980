@@ -1,9 +1,9 @@
-from attr import validate
 from rest_framework import serializers
 from .models import (
     CreditCards,
     HighSchool,
     HighSchoolID,
+    Messages,
     PurchaseRecapp,
     Recapp,
     RecappQuotes,
@@ -11,6 +11,7 @@ from .models import (
 )
 
 from users.models import User
+from home.api.v1.serializers import UserSerializer
 
 class HighSchoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -176,19 +177,14 @@ class ReportsSerializer(serializers.Serializer):
     online_users = serializers.IntegerField()
     sold_recapps = serializers.IntegerField()
 
-# class MessageSerializer(serializers.ModelSerializer):
-#     high_school_code = serializers.SerializerMethodField('get_high_school_code')
-#     sender_id = serializers.IntegerField(write_only=True)
-#     receiver_id = serializers.IntegerField(write_only=True)
-#     sender = UserSerializer()
-#     receiver = UserSerializer()
+class MessageSerializer(serializers.ModelSerializer):
+    sender = UserSerializer(read_only=True)
+    receiver = UserSerializer(read_only=True)
+    receiver_id = serializers.IntegerField(write_only=True)
 
-#     class Meta:
-#         model = User
-#         fields = ["id","sender","receiver","text","created_at","sender_id","receiver_id"]
-#         extra_kwargs ={
-#             'created_at':{'read_only':True},
-#             'sender_id':{'read_only':True},
-#             'receiver_id':{'read_only':True},
-
-#         }
+    class Meta:
+        model = Messages
+        fields = ["id","sender","receiver","text","created_at","read_at","receiver_id"]
+        extra_kwargs ={
+            'read_at':{'read_only':True},
+        }

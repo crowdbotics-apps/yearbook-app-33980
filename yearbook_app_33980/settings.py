@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_rest_passwordreset',
 ]
+
 LOCAL_APPS = [
     'home',
     'users.apps.UsersConfig',
@@ -86,7 +87,7 @@ THIRD_PARTY_APPS = [
     'django_extensions',
     'drf_yasg',
     'storages',
-    'stripe'
+    'stripe',
 ]
 MODULES_APPS = get_modules()
 

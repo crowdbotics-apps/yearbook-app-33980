@@ -46,8 +46,9 @@ class CreditCards(models.Model):
     expiry = models.DateField()
     cvc= models.CharField(max_length=4)
 
-# class Messages(models.Model):
-#     sender = models.ForeignKey('users.User',on_delete=models.CASCADE)
-#     receiver = models.ForeignKey('users.User',on_delete=models.CASCADE)
-#     text = models.CharField(max_length=500)
-#     created_at = models.DateTimeField(auto_now_add=True)
+class Messages(models.Model):
+    sender = models.ForeignKey('users.User',on_delete=models.CASCADE,related_name="sender")
+    receiver = models.ForeignKey('users.User',on_delete=models.CASCADE,related_name="receiver")
+    text = models.CharField(max_length=500)
+    read_at = models.DateTimeField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)

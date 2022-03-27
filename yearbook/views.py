@@ -2,8 +2,8 @@ from django.shortcuts import render
 from users.models import User
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
-from .models import CreditCards, HighSchool, HighSchoolID, Messages, PurchaseRecapp, Recapp
-from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, MessageSerializer, PurchaseRecappSerializer, RecappSerializer, StudentSerializer
+from .models import CreditCards, HighSchool, HighSchoolID, PurchaseRecapp, Recapp, Messages
+from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, MessageSerializer,PurchaseRecappSerializer, RecappSerializer, StudentSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
@@ -88,7 +88,7 @@ class RecappViewSet(ModelViewSet):
         recapp.save()
         seriralizer = self.serializer_class(recapp)
         return Response(seriralizer.data)
-        
+
 class HighSchoolsViewset(ModelViewSet):
     serializer_class = HighSchoolSerializer
     queryset = HighSchool.objects.all()
@@ -174,6 +174,22 @@ class StudentsViewset(ModelViewSet):
         seriralizer = self.serializer_class(student)
         return Response(seriralizer.data)
 
+    @action(detail=False, methods=["put"],url_path=r'approve_id/(?P<student_id>\d+)')
+    def approve_id(self,request, *args, **kwargs):
+        student = HighSchoolID.get(user=self.kwargs['student_id'])
+        student.status="approved"
+        student.save()
+        seriralizer = self.serializer_class(student)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["put"],url_path=r'reject_id/(?P<student_id>\d+)')
+    def reject_id(self,request, *args, **kwargs):
+        student = HighSchoolID.get(user=self.kwargs['student_id'])
+        student.status="rejected"
+        student.save()
+        seriralizer = self.serializer_class(student)
+        return Response(seriralizer.data)
+
     @action(detail=False, methods=["get"],url_path=r'me')
     def me(self,request, *args, **kwargs):
         student = self.queryset.get(id=request.user.id)
@@ -182,9 +198,16 @@ class StudentsViewset(ModelViewSet):
 
 # class ReportsViewset(ViewSet):
 
+class MessagesViewset(ModelViewSet):
+    permission_classes = (IsAuthenticated,)
 
-# class MessagesViewset(ModelViewSet):
-#     permission_classes = (IsAuthenticated,)
+    serializer_class = MessageSerializer
+    queryset = Messages.objects.all()
 
-#     serializer_class = MessageSerializer
-#     queryset = Messages.objects.all()
+    def list(self, request):
+        queryset = Messages.objects.filter(receiver=request.user.id)
+        serializer = MessageSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def perform_create(self,serializer):
+        return serializer.save(sender=self.request.user)
