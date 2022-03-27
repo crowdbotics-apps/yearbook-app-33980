@@ -2,8 +2,8 @@ from django.shortcuts import render
 from users.models import User
 from rest_framework.viewsets import ModelViewSet, ViewSet
 from rest_framework.response import Response
-from .models import CreditCards, HighSchool, HighSchoolID, PurchaseRecapp, Recapp
-from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, PurchaseRecappSerializer, RecappSerializer, StudentSerializer
+from .models import CreditCards, HighSchool, HighSchoolID, Messages, PurchaseRecapp, Recapp
+from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, MessageSerializer, PurchaseRecappSerializer, RecappSerializer, StudentSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
@@ -73,6 +73,22 @@ class RecappViewSet(ModelViewSet):
         seriralizer = self.serializer_class(recapps,many=True)
         return Response(seriralizer.data)
 
+    @action(detail=False, methods=["put"],url_path=r'approve/(?P<recapp_id>\d+)')
+    def approve(self,request, *args, **kwargs):
+        recapp = self.queryset.get(id=self.kwargs['recapp_id'])
+        recapp.status="approved"
+        recapp.save()
+        seriralizer = self.serializer_class(recapp)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["put"],url_path=r'reject/(?P<recapp_id>\d+)')
+    def reject(self,request, *args, **kwargs):
+        recapp = self.queryset.get(id=self.kwargs['recapp_id'])
+        recapp.status="reject"
+        recapp.save()
+        seriralizer = self.serializer_class(recapp)
+        return Response(seriralizer.data)
+        
 class HighSchoolsViewset(ModelViewSet):
     serializer_class = HighSchoolSerializer
     queryset = HighSchool.objects.all()
@@ -165,3 +181,10 @@ class StudentsViewset(ModelViewSet):
         return Response(seriralizer.data)
 
 # class ReportsViewset(ViewSet):
+
+
+# class MessagesViewset(ModelViewSet):
+#     permission_classes = (IsAuthenticated,)
+
+#     serializer_class = MessageSerializer
+#     queryset = Messages.objects.all()
