@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.db.models import Count
 from users.models import User
 from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import CreditCards, HighSchool, HighSchoolID, PurchaseRecapp, Recapp, Messages
 from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, MessageSerializer,PurchaseRecappSerializer, RecappSerializer, StudentSerializer
@@ -14,7 +15,7 @@ from rest_framework.parsers import  MultiPartParser, FormParser, JSONParser
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 import stripe
-
+from datetime import datetime, timedelta
 class UploadHighSchoolIdViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
@@ -196,8 +197,6 @@ class StudentsViewset(ModelViewSet):
         seriralizer = self.serializer_class(student)
         return Response(seriralizer.data)
 
-# class ReportsViewset(ViewSet):
-
 class MessagesViewset(ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
@@ -211,3 +210,20 @@ class MessagesViewset(ModelViewSet):
 
     def perform_create(self,serializer):
         return serializer.save(sender=self.request.user)
+
+
+class AnalyticsAPIView(APIView):
+
+    def get(self, request):
+        active_users = User.objects.filter(is_active=True).count()
+        online_users = 20
+        new_users = User.objects.filter(date_joined__lt=datetime.today()- timedelta(30)).count()
+        sold_recapps = PurchaseRecapp.objects.filter(status='completed').count()
+        registration = User.objects.extra(
+                select={'date_joined': 'date( date_joined )'}
+                ).values('date_joined').annotate(
+                    total= Count('id',distinct=True)).order_by('date_joined'
+                    )
+
+        return Response({"active_users":active_users,"online_users":online_users,"new_users":new_users,"sold_recapps":sold_recapps,"registration":registration})
+        

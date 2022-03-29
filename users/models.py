@@ -17,6 +17,13 @@ class User(AbstractUser):
     This model represents the User instance of the system, login system and
     everything that relates with an `User` is represented by this model.
     """
+
+    USER_TYPE_CHOICES = (
+      (1, 'student'),
+      (2, 'admin'),
+      (3, 'superadmin'),
+    )
+
     name = models.CharField(
         null=True,
         blank=True,
@@ -53,6 +60,11 @@ class User(AbstractUser):
         default='pending'
     )
     photo = models.FileField(blank=True)
+
+    role = models.PositiveSmallIntegerField(
+        choices=USER_TYPE_CHOICES,
+        default=1
+    )
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})

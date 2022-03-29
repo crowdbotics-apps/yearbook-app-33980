@@ -3,7 +3,7 @@ from django.http import HttpRequest
 from django.utils.translation import ugettext_lazy as _
 from allauth.account import app_settings as allauth_settings
 from allauth.account.forms import ResetPasswordForm
-from allauth.utils import email_address_exists, generate_unique_username
+from allauth.utils import email_address_exists
 from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from rest_framework import serializers
@@ -16,10 +16,11 @@ User = get_user_model()
 class SignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("id", "email","password","name","lname","username","dob","high_school","address","zip_code","status","photo")
+        fields = ["id", "email","password","name","lname","username","dob","high_school","address","zip_code","status","photo","role"]
         extra_kwargs = {
             "password": {"write_only": True, "style": {"input_type": "password"}},
-            "status":{"read_only":True}
+            "status":{"read_only":True},
+            "role":{"read_only":True}
         }
 
     def _get_request(self):
@@ -62,6 +63,7 @@ class SignupSerializer(serializers.ModelSerializer):
             high_school=validated_data.get("high_school"),
             address=validated_data.get("address"),
             zip_code=validated_data.get("zip_code"),
+            role=1,
             status='active'
         )
         user.set_password(validated_data.get("password"))
@@ -78,7 +80,7 @@ class SignupSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code","status","photo"]
+        fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code","status","photo","role"]
 
 
 class PasswordSerializer(PasswordResetSerializer):

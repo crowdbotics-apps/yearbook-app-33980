@@ -168,15 +168,6 @@ class StudentSerializer(serializers.ModelSerializer):
         except:
             return ""
 
-class ReportsSerializer(serializers.Serializer):
-    user_retention = serializers.IntegerField()
-    new_users = serializers.IntegerField()
-    registration_pd = serializers.IntegerField()
-    registraton_pw = serializers.IntegerField()
-    registration_pm = serializers.IntegerField()
-    online_users = serializers.IntegerField()
-    sold_recapps = serializers.IntegerField()
-
 class MessageSerializer(serializers.ModelSerializer):
     sender = UserSerializer(read_only=True)
     receiver = UserSerializer(read_only=True)
