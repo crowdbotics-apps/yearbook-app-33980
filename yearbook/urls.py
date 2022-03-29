@@ -19,7 +19,6 @@ router.register(r'purchase',PurchaseRecappViewSet,basename="purchase")
 router.register(r'cc',CreditCardsViewset,basename="credit_cards")
 router.register(r'students',StudentsViewset, basename="students")
 router.register(r'messages',MessagesViewset, basename="messages")
-# router.register(r'analytics',AnalyticsAPIView, basename="analytics")
 
 urlpatterns = [
     path("",include(router.urls)),

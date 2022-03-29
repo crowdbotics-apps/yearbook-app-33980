@@ -19,9 +19,8 @@ class SignupSerializer(serializers.ModelSerializer):
         fields = ["id", "email","password","name","lname","username","dob","high_school","address","zip_code","status","photo","role"]
         extra_kwargs = {
             "password": {"write_only": True, "style": {"input_type": "password"}},
-            "status":{"read_only":True},
-            "role":{"read_only":True}
-        }
+            "status":{"read_only":True}
+            }
 
     def _get_request(self):
         request = self.context.get("request")
@@ -63,7 +62,7 @@ class SignupSerializer(serializers.ModelSerializer):
             high_school=validated_data.get("high_school"),
             address=validated_data.get("address"),
             zip_code=validated_data.get("zip_code"),
-            role=1,
+            role=validated_data.get("role"),
             status='active'
         )
         user.set_password(validated_data.get("password"))

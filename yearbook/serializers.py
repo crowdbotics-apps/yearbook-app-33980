@@ -155,7 +155,7 @@ class StudentSerializer(serializers.ModelSerializer):
     high_school = HighSchoolSerializer()
     class Meta:
         model = User
-        fields = ["id", "email", "name","lname","username","dob","high_school","high_school_id","address","zip_code","status","photo","high_school_code"]
+        fields = ["id", "email", "name","lname","username","dob","high_school","high_school_id","address","zip_code","status","photo","high_school_code","role"]
         extra_kwargs ={
             'high_school_code':{'read_only':True},
             'high_school_id':{'write_only': True},
