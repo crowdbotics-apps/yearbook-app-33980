@@ -16,15 +16,26 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 import stripe
 from datetime import datetime, timedelta
-class UploadHighSchoolIdViewSet(ModelViewSet):
+class HighSchoolIdViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
     serializer_class = HighSchoolIdSerializer
     queryset = HighSchoolID.objects.all()
-    http_method_names = ['post']
 
     def perform_create(self,serializer):
         serializer.save(user=self.request.user,file=self.request.data['file'])
+
+    @action(detail=False, methods=["get"],url_path=r'pending')
+    def pending(self,request, *args, **kwargs):
+        ids = HighSchoolID.objects.filter(status="pending")
+        seriralizer = self.serializer_class(ids,many=True)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["get"],url_path=r'rejected')
+    def rejected(self,request, *args, **kwargs):
+        ids = HighSchoolID.objects.filter(status="rejected")
+        seriralizer = self.serializer_class(ids,many=True)
+        return Response(seriralizer.data)
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
@@ -88,6 +99,18 @@ class RecappViewSet(ModelViewSet):
         recapp.status="reject"
         recapp.save()
         seriralizer = self.serializer_class(recapp)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["get"],url_path=r'pending')
+    def pending(self,request, *args, **kwargs):
+        recapps = Recapp.objects.filter(status="pending")
+        seriralizer = self.serializer_class(recapps,many=True)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["get"],url_path=r'rejected')
+    def rejected(self,request, *args, **kwargs):
+        recapps = Recapp.objects.filter(status="rejected")
+        seriralizer = self.serializer_class(recapps,many=True)
         return Response(seriralizer.data)
 
 class HighSchoolsViewset(ModelViewSet):
@@ -177,7 +200,7 @@ class StudentsViewset(ModelViewSet):
 
     @action(detail=False, methods=["put"],url_path=r'approve_id/(?P<student_id>\d+)')
     def approve_id(self,request, *args, **kwargs):
-        student = HighSchoolID.get(user=self.kwargs['student_id'])
+        student = HighSchoolID.objects.get(user=self.kwargs['student_id'])
         student.status="approved"
         student.save()
         seriralizer = self.serializer_class(student)
@@ -185,11 +208,23 @@ class StudentsViewset(ModelViewSet):
 
     @action(detail=False, methods=["put"],url_path=r'reject_id/(?P<student_id>\d+)')
     def reject_id(self,request, *args, **kwargs):
-        student = HighSchoolID.get(user=self.kwargs['student_id'])
+        student = HighSchoolID.objects.get(user=self.kwargs['student_id'])
         student.status="rejected"
         student.save()
         seriralizer = self.serializer_class(student)
         return Response(seriralizer.data)
+
+    # @action(detail=False, methods=["get"],url_path=r'pending')
+    # def pending(self,request, *args, **kwargs):
+    #     pending_list = HighSchoolID.objects.filter(status="pending")
+        
+    #     return Response({"hello":"hi"})
+
+    # @action(detail=False, methods=["get"],url_path=r'rejected')
+    # def rejected(self,request, *args, **kwargs):
+    #     students = User.objects.filter(status="rejected")
+    #     seriralizer = self.serializer_class(students,many=True)
+    #     return Response(seriralizer.data)
 
     @action(detail=False, methods=["get"],url_path=r'me')
     def me(self,request, *args, **kwargs):

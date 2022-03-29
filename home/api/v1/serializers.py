@@ -63,7 +63,7 @@ class SignupSerializer(serializers.ModelSerializer):
             address=validated_data.get("address"),
             zip_code=validated_data.get("zip_code"),
             role=validated_data.get("role"),
-            status='active'
+            status='pending'
         )
         user.set_password(validated_data.get("password"))
         user.save()

@@ -18,11 +18,30 @@ class HighSchoolSerializer(serializers.ModelSerializer):
         model=HighSchool
         fields='__all__'
 
+class StudentSerializer(serializers.ModelSerializer):
+    high_school_code = serializers.SerializerMethodField('get_high_school_code')
+    high_school_id = serializers.IntegerField(write_only=True)
+    high_school = HighSchoolSerializer()
+    class Meta:
+        model = User
+        fields = ["id", "email", "name","lname","username","dob","high_school","high_school_id","address","zip_code","status","photo","high_school_code","role"]
+        extra_kwargs ={
+            'high_school_code':{'read_only':True},
+            'high_school_id':{'write_only': True},
+
+        }
+    def get_high_school_code(self,student):
+        try:
+            code = HighSchoolID.objects.get(user=student.id).code
+            return code
+        except:
+            return ""
+
 class HighSchoolIdSerializer(serializers.ModelSerializer):
-    
+    user = StudentSerializer(read_only=True)
     class Meta:
         model=HighSchoolID
-        fields=['user','file','code']
+        fields=['user','file','code','status']
         extra_kwargs = {
             'user': {'read_only': True},
             'code': {'read_only': True},
@@ -148,25 +167,6 @@ class CreditCardsSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return cc
-
-class StudentSerializer(serializers.ModelSerializer):
-    high_school_code = serializers.SerializerMethodField('get_high_school_code')
-    high_school_id = serializers.IntegerField(write_only=True)
-    high_school = HighSchoolSerializer()
-    class Meta:
-        model = User
-        fields = ["id", "email", "name","lname","username","dob","high_school","high_school_id","address","zip_code","status","photo","high_school_code","role"]
-        extra_kwargs ={
-            'high_school_code':{'read_only':True},
-            'high_school_id':{'write_only': True},
-
-        }
-    def get_high_school_code(self,student):
-        try:
-            code = HighSchoolID.objects.get(user=student.id).code
-            return code
-        except:
-            return ""
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = UserSerializer(read_only=True)

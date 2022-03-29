@@ -4,7 +4,7 @@ from .views import (
     AnalyticsAPIView,
     PurchaseRecappViewSet,
     RecappViewSet,
-    UploadHighSchoolIdViewSet,
+    HighSchoolIdViewSet,
     HighSchoolsViewset,
     CreditCardsViewset,
     StudentsViewset,
@@ -13,7 +13,7 @@ from .views import (
 
 router = DefaultRouter()
 router.register(r'highschools',HighSchoolsViewset,basename="high_schools")
-router.register(r'upload_id', UploadHighSchoolIdViewSet,basename="upload_id")
+router.register(r'id', HighSchoolIdViewSet,basename="id")
 router.register(r'recapp',RecappViewSet,basename="recapp")
 router.register(r'purchase',PurchaseRecappViewSet,basename="purchase")
 router.register(r'cc',CreditCardsViewset,basename="credit_cards")
