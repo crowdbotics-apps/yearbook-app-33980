@@ -36,7 +36,6 @@ class HighSchoolIdViewSet(ModelViewSet):
             ids = ids
         else:
             ids = ids.filter(user__high_school=request.user.high_school)
-        ids = HighSchoolID.objects.filter(status="pending")
         seriralizer = self.serializer_class(ids,many=True)
         return Response(seriralizer.data)
 
