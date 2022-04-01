@@ -404,3 +404,10 @@ class YearbookCommitteeViewset(ModelViewSet):
         serializer = self.serializer_class(school_committee,many=True)
 
         return Response(serializer.data)
+
+    @action(detail=False,methods=["delete"],url_path=r'remove_student/(?P<student_id>\d+)')
+    def committee_from_school(self,request, *args, **kwargs):
+        user = self.queryset.filter(user__id=self.kwargs['student_id'])
+        serializer = self.serializer_class(user)
+        user.delete()
+        return Response(serializer.data)
