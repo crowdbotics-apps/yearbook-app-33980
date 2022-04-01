@@ -23,13 +23,14 @@ class StudentSerializer(serializers.ModelSerializer):
     high_school_code = serializers.SerializerMethodField('get_high_school_code')
     high_school_id = serializers.IntegerField(write_only=True)
     high_school = HighSchoolSerializer()
+    on_committee = serializers.SerializerMethodField('is_on_committee')
     class Meta:
         model = User
-        fields = ["id", "email", "name","lname","username","dob","high_school","high_school_id","address","zip_code","status","photo","high_school_code","role"]
+        fields = ["id", "email", "name","lname","username","dob","high_school","high_school_id","address","zip_code","status","photo","high_school_code","role","on_committee"]
         extra_kwargs ={
             'high_school_code':{'read_only':True},
             'high_school_id':{'write_only': True},
-
+            'on_committee': {'read_only':True}
         }
     def get_high_school_code(self,student):
         try:
@@ -37,6 +38,16 @@ class StudentSerializer(serializers.ModelSerializer):
             return code
         except:
             return ""
+    
+    def is_on_committee(self,student):
+        try:
+            students_committee = YearbookCommittee.objects.filter(user=student.id)
+            if students_committee is not None:
+                return True
+            else:
+                return False 
+        except:
+            return False
 
 class SchoolAdminSerializer(serializers.ModelSerializer):
     high_school_id = serializers.IntegerField(write_only=True)
@@ -193,11 +204,10 @@ class MessageSerializer(serializers.ModelSerializer):
         }
 
 class YearbookCommitteeSerializer(serializers.ModelSerializer):
-    high_school_id = serializers.IntegerField(write_only=True)
     high_school = HighSchoolSerializer(read_only=True)
     user_id = serializers.IntegerField(write_only=True)
     user = StudentSerializer(read_only=True)
 
     class Meta:
         model = YearbookCommittee
-        fields = ['id','user','high_school','user_id','high_school_id']
+        fields = ['id','user','high_school','user_id']

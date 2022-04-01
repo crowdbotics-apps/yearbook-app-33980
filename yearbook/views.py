@@ -126,7 +126,7 @@ class RecappViewSet(ModelViewSet):
         recapp.status="rejected"
         recapp.save()
         if request.method == "PUT":
-            message = request.PUT["message"]
+            message = request.data["message"]
             send_mail(
                 'Your Recapp has been rejected',
                 message,
@@ -370,6 +370,10 @@ class YearbookCommitteeViewset(ModelViewSet):
     serializer_class = YearbookCommitteeSerializer
     queryset = YearbookCommittee.objects.all()
 
+    def perform_create(self,serializer):
+        user_data = User.objects.get(id=self.request.data['user_id'])
+
+        serializer.save(user=user_data,high_school=self.request.user.high_school)
 
     def list(self, request):
         role = request.user.role
@@ -392,4 +396,11 @@ class YearbookCommitteeViewset(ModelViewSet):
             
         recapps = get_object_or_404(queryset, id=pk)
         serializer = self.serializer_class(recapps)
+        return Response(serializer.data)
+
+    @action(detail=False,methods=["get"],url_path=r'school')
+    def committee_from_school(self,request):
+        school_committee = self.queryset.filter(high_school__id=request.user.high_school.id)
+        serializer = self.serializer_class(school_committee,many=True)
+
         return Response(serializer.data)
