@@ -42,7 +42,8 @@ class StudentSerializer(serializers.ModelSerializer):
     def is_on_committee(self,student):
         try:
             students_committee = YearbookCommittee.objects.filter(user=student.id)
-            if students_committee is not None:
+
+            if len(students_committee) != 0:
                 return True
             else:
                 return False 

@@ -398,9 +398,9 @@ class YearbookCommitteeViewset(ModelViewSet):
         serializer = self.serializer_class(recapps)
         return Response(serializer.data)
 
-    @action(detail=False,methods=["get"],url_path=r'school')
+    @action(detail=False,methods=["get"],url_path=r'school/')
     def committee_from_school(self,request):
-        school_committee = self.queryset.filter(high_school__id=request.user.high_school.id)
+        school_committee = self.queryset.filter(high_school=request.user.high_school)
         serializer = self.serializer_class(school_committee,many=True)
 
         return Response(serializer.data)
