@@ -30,6 +30,12 @@ class HighSchoolIdViewSet(ModelViewSet):
 
     @action(detail=False, methods=["get"],url_path=r'pending')
     def pending(self,request, *args, **kwargs):
+        role = request.user.role
+        ids = HighSchoolID.objects.filter(status="pending")
+        if role == '3':
+            ids = ids
+        else:
+            ids = ids.filter(user__high_school=request.user.high_school)
         ids = HighSchoolID.objects.filter(status="pending")
         seriralizer = self.serializer_class(ids,many=True)
         return Response(seriralizer.data)
@@ -307,7 +313,7 @@ class AnalyticsAPIView(APIView):
         else:
             active_users = User.objects.filter(is_active=True,high_school=request.user.high_school).count()
             new_users = User.objects.filter(high_school=request.user.high_school,date_joined__lt=datetime.today()- timedelta(30)).count()
-            sold_recapps = PurchaseRecapp.objects.filter(status='completed').count() #todo
+            sold_recapps = PurchaseRecapp.objects.filter(recapp__high_school=request.user.high_school,status='completed').count()
             registration = User.objects.filter(high_school=request.user.high_school).extra(
                 select={'date_joined': 'date( date_joined )'}
                 ).values('date_joined').annotate(
