@@ -1,3 +1,4 @@
+from posixpath import basename
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
@@ -8,7 +9,8 @@ from .views import (
     HighSchoolsViewset,
     CreditCardsViewset,
     StudentsViewset,
-    MessagesViewset
+    MessagesViewset,
+    SchoolAdminsViewset
     )
 
 router = DefaultRouter()
@@ -19,6 +21,7 @@ router.register(r'purchase',PurchaseRecappViewSet,basename="purchase")
 router.register(r'cc',CreditCardsViewset,basename="credit_cards")
 router.register(r'students',StudentsViewset, basename="students")
 router.register(r'messages',MessagesViewset, basename="messages")
+router.register(r'school_admins',SchoolAdminsViewset,basename="school_admins")
 
 urlpatterns = [
     path("",include(router.urls)),

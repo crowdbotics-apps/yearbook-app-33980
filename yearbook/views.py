@@ -1,6 +1,7 @@
 from django.db.models import Count
+from home.api.v1.serializers import UserSerializer
 from users.models import User
-from rest_framework.viewsets import ModelViewSet, ViewSet
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import CreditCards, HighSchool, HighSchoolID, PurchaseRecapp, Recapp, Messages
@@ -16,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 import stripe
 from datetime import datetime, timedelta
+
 class HighSchoolIdViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
@@ -96,7 +98,7 @@ class RecappViewSet(ModelViewSet):
     @action(detail=False, methods=["put"],url_path=r'reject/(?P<recapp_id>\d+)')
     def reject(self,request, *args, **kwargs):
         recapp = self.queryset.get(id=self.kwargs['recapp_id'])
-        recapp.status="reject"
+        recapp.status="rejected"
         recapp.save()
         seriralizer = self.serializer_class(recapp)
         return Response(seriralizer.data)
@@ -261,4 +263,38 @@ class AnalyticsAPIView(APIView):
                     )
 
         return Response({"active_users":active_users,"online_users":online_users,"new_users":new_users,"sold_recapps":sold_recapps,"registration":registration})
-        
+
+
+class SchoolAdminsViewset(ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+
+    serializer_class = UserSerializer
+    queryset = User.objects.filter(role=2)
+
+    @action(detail=False, methods=["put"],url_path=r'approve/(?P<admin_id>\d+)')
+    def approve(self,request, *args, **kwargs):
+        recapp = self.queryset.get(id=self.kwargs['admin_id'])
+        recapp.status="approved"
+        recapp.save()
+        seriralizer = self.serializer_class(recapp)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["put"],url_path=r'reject/(?P<admin_id>\d+)')
+    def reject(self,request, *args, **kwargs):
+        recapp = self.queryset.get(id=self.kwargs['admin_id'])
+        recapp.status="rejected"
+        recapp.save()
+        seriralizer = self.serializer_class(recapp)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["get"],url_path=r'pending')
+    def pending(self,request, *args, **kwargs):
+        recapps = self.queryset.filter(status="pending")
+        seriralizer = self.serializer_class(recapps,many=True)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["get"],url_path=r'rejected')
+    def rejected(self,request, *args, **kwargs):
+        recapps = self.queryset.filter(status="rejected")
+        seriralizer = self.serializer_class(recapps,many=True)
+        return Response(seriralizer.data)
