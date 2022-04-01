@@ -134,7 +134,14 @@ class RecappViewSet(ModelViewSet):
 
     @action(detail=False, methods=["get"],url_path=r'pending')
     def pending(self,request, *args, **kwargs):
-        recapps = Recapp.objects.filter(status="pending")
+        role = request.user.role
+
+        if role == '3':
+            queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
+
+        recapps = queryset.filter(status="pending")
         seriralizer = self.serializer_class(recapps,many=True)
         return Response(seriralizer.data)
 
@@ -285,15 +292,29 @@ class MessagesViewset(ModelViewSet):
 class AnalyticsAPIView(APIView):
 
     def get(self, request):
-        active_users = User.objects.filter(is_active=True).count()
-        online_users = 20
-        new_users = User.objects.filter(date_joined__lt=datetime.today()- timedelta(30)).count()
-        sold_recapps = PurchaseRecapp.objects.filter(status='completed').count()
-        registration = User.objects.extra(
+        role = request.user.role
+
+        if role == '3':
+            active_users = User.objects.filter(is_active=True).count()
+            new_users = User.objects.filter(date_joined__lt=datetime.today()- timedelta(30)).count()
+            sold_recapps = PurchaseRecapp.objects.filter(status='completed').count()
+            registration = User.objects.extra(
+                    select={'date_joined': 'date( date_joined )'}
+                    ).values('date_joined').annotate(
+                        total= Count('id',distinct=True)).order_by('date_joined'
+                        )
+
+        else:
+            active_users = User.objects.filter(is_active=True,high_school=request.user.high_school).count()
+            new_users = User.objects.filter(high_school=request.user.high_school,date_joined__lt=datetime.today()- timedelta(30)).count()
+            sold_recapps = PurchaseRecapp.objects.filter(status='completed').count() #todo
+            registration = User.objects.filter(high_school=request.user.high_school).extra(
                 select={'date_joined': 'date( date_joined )'}
                 ).values('date_joined').annotate(
                     total= Count('id',distinct=True)).order_by('date_joined'
                     )
+
+        online_users = 20
 
         return Response({"active_users":active_users,"online_users":online_users,"new_users":new_users,"sold_recapps":sold_recapps,"registration":registration})
 
@@ -322,7 +343,13 @@ class SchoolAdminsViewset(ModelViewSet):
 
     @action(detail=False, methods=["get"],url_path=r'pending')
     def pending(self,request, *args, **kwargs):
-        recapps = self.queryset.filter(status="pending")
+        role = request.user.role
+
+        if role == '3':
+            queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
+        recapps = queryset.filter(status="pending")
         seriralizer = self.serializer_class(recapps,many=True)
         return Response(seriralizer.data)
 
