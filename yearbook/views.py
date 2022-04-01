@@ -76,9 +76,26 @@ class RecappViewSet(ModelViewSet):
     serializer_class = RecappSerializer
     queryset = Recapp.objects.all()
     # http_method_names=['post']
+
     def list(self, request):
-        queryset = Recapp.objects.filter(high_school=request.user.high_school)
-        serializer = RecappSerializer(queryset, many=True)
+        role = request.user.role
+        if role == 3:
+            queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
+
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        role = request.user.role
+        if role == 3:
+            queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
+            
+        recapps = get_object_or_404(queryset, id=pk)
+        serializer = self.serializer_class(recapps)
         return Response(serializer.data)
 
     @action(detail=False, methods=["get"],url_path=r'highschool/(?P<highschool_id>\d+)')
@@ -164,7 +181,6 @@ class PurchaseRecappViewSet(ModelViewSet):
 
 class CreditCardsViewset(ModelViewSet):
     permission_classes = (IsAuthenticated,)
-
     serializer_class = CreditCardsSerializer
     queryset = CreditCards.objects.all()
 
@@ -205,7 +221,7 @@ class StudentsViewset(ModelViewSet):
         student = HighSchoolID.objects.get(user=self.kwargs['student_id'])
         student.status="approved"
         student.save()
-        seriralizer = self.serializer_class(student)
+        seriralizer = HighSchoolIdSerializer(student)
         return Response(seriralizer.data)
 
     @action(detail=False, methods=["put"],url_path=r'reject_id/(?P<student_id>\d+)')
@@ -213,26 +229,29 @@ class StudentsViewset(ModelViewSet):
         student = HighSchoolID.objects.get(user=self.kwargs['student_id'])
         student.status="rejected"
         student.save()
-        seriralizer = self.serializer_class(student)
+        seriralizer = HighSchoolIdSerializer(student)
         return Response(seriralizer.data)
 
-    # @action(detail=False, methods=["get"],url_path=r'pending')
-    # def pending(self,request, *args, **kwargs):
-    #     pending_list = HighSchoolID.objects.filter(status="pending")
-        
-    #     return Response({"hello":"hi"})
+    def list(self, request):
+        role = request.user.role
+        if role == 2:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
+        else:
+            queryset = self.queryset
 
-    # @action(detail=False, methods=["get"],url_path=r'rejected')
-    # def rejected(self,request, *args, **kwargs):
-    #     students = User.objects.filter(status="rejected")
-    #     seriralizer = self.serializer_class(students,many=True)
-    #     return Response(seriralizer.data)
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
 
-    @action(detail=False, methods=["get"],url_path=r'me')
-    def me(self,request, *args, **kwargs):
-        student = self.queryset.get(id=request.user.id)
-        seriralizer = self.serializer_class(student)
-        return Response(seriralizer.data)
+    def retrieve(self, request, pk=None):
+        role = request.user.role
+        if role == 2:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
+        else:
+            queryset = self.queryset
+            
+        students = get_object_or_404(queryset, id=pk)
+        serializer = self.serializer_class(students)
+        return Response(serializer.data)
 
 class MessagesViewset(ModelViewSet):
     permission_classes = (IsAuthenticated,)
