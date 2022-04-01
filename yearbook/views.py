@@ -4,8 +4,8 @@ from users.models import User
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import CreditCards, HighSchool, HighSchoolID, PurchaseRecapp, Recapp, Messages
-from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, MessageSerializer,PurchaseRecappSerializer, RecappSerializer, StudentSerializer,SchoolAdminSerializer
+from .models import CreditCards, HighSchool, HighSchoolID, PurchaseRecapp, Recapp, Messages, YearbookCommittee
+from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, MessageSerializer,PurchaseRecappSerializer, RecappSerializer, StudentSerializer,SchoolAdminSerializer, YearbookCommitteeSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
@@ -364,3 +364,33 @@ class SchoolAdminsViewset(ModelViewSet):
         recapps = self.queryset.filter(status="rejected")
         seriralizer = self.serializer_class(recapps,many=True)
         return Response(seriralizer.data)
+
+class YearbookCommitteeViewset(ModelViewSet):
+    permission_classes = (IsAuthenticated,)
+
+    serializer_class = YearbookCommitteeSerializer
+    queryset = YearbookCommittee.objects.all()
+
+
+    def list(self, request):
+        role = request.user.role
+
+        if role == '3':
+            queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
+
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        role = request.user.role
+
+        if role == '3':
+            queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
+            
+        recapps = get_object_or_404(queryset, id=pk)
+        serializer = self.serializer_class(recapps)
+        return Response(serializer.data)

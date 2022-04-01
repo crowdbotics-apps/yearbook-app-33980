@@ -52,3 +52,7 @@ class Messages(models.Model):
     text = models.CharField(max_length=500)
     read_at = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class YearbookCommittee(models.Model):
+    user = models.ForeignKey('users.User',on_delete=models.CASCADE)
+    high_school = models.ForeignKey('HighSchool',on_delete=models.CASCADE)

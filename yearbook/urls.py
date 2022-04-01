@@ -10,7 +10,8 @@ from .views import (
     CreditCardsViewset,
     StudentsViewset,
     MessagesViewset,
-    SchoolAdminsViewset
+    SchoolAdminsViewset,
+    YearbookCommitteeViewset
     )
 
 router = DefaultRouter()
@@ -22,6 +23,7 @@ router.register(r'cc',CreditCardsViewset,basename="credit_cards")
 router.register(r'students',StudentsViewset, basename="students")
 router.register(r'messages',MessagesViewset, basename="messages")
 router.register(r'school_admins',SchoolAdminsViewset,basename="school_admins")
+router.register(r'committee',YearbookCommitteeViewset,basename="yearbook_committee")
 
 urlpatterns = [
     path("",include(router.urls)),

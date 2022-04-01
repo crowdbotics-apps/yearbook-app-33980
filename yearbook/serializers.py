@@ -7,7 +7,8 @@ from .models import (
     PurchaseRecapp,
     Recapp,
     RecappQuotes,
-    RecappVideos
+    RecappVideos,
+    YearbookCommittee
 )
 
 from users.models import User
@@ -190,3 +191,13 @@ class MessageSerializer(serializers.ModelSerializer):
         extra_kwargs ={
             'read_at':{'read_only':True},
         }
+
+class YearbookCommitteeSerializer(serializers.ModelSerializer):
+    high_school_id = serializers.IntegerField(write_only=True)
+    high_school = HighSchoolSerializer(read_only=True)
+    user_id = serializers.IntegerField(write_only=True)
+    user = StudentSerializer(read_only=True)
+
+    class Meta:
+        model = YearbookCommittee
+        fields = ['id','user','high_school','user_id','high_school_id']
