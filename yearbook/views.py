@@ -17,6 +17,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 import stripe
 from datetime import datetime, timedelta
+from django.core.mail import send_mail
 
 class HighSchoolIdViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -79,7 +80,8 @@ class RecappViewSet(ModelViewSet):
 
     def list(self, request):
         role = request.user.role
-        if role == 3:
+
+        if role == '3':
             queryset = self.queryset
         else:
             queryset = self.queryset.filter(high_school=request.user.high_school)
@@ -89,7 +91,8 @@ class RecappViewSet(ModelViewSet):
 
     def retrieve(self, request, pk=None):
         role = request.user.role
-        if role == 3:
+
+        if role == '3':
             queryset = self.queryset
         else:
             queryset = self.queryset.filter(high_school=request.user.high_school)
@@ -117,6 +120,15 @@ class RecappViewSet(ModelViewSet):
         recapp = self.queryset.get(id=self.kwargs['recapp_id'])
         recapp.status="rejected"
         recapp.save()
+        if request.method == "PUT":
+            message = request.PUT["message"]
+            send_mail(
+                'Your Recapp has been rejected',
+                message,
+                'swornim.shrestha@crowdbotics.com',
+                ['srestaswrnm@gmail.com'],
+                fail_silently=False,
+            )
         seriralizer = self.serializer_class(recapp)
         return Response(seriralizer.data)
 
@@ -234,20 +246,22 @@ class StudentsViewset(ModelViewSet):
 
     def list(self, request):
         role = request.user.role
-        if role == 2:
-            queryset = self.queryset.filter(high_school=request.user.high_school)
-        else:
+
+        if role == '3':
             queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
 
         serializer = self.serializer_class(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
         role = request.user.role
-        if role == 2:
-            queryset = self.queryset.filter(high_school=request.user.high_school)
-        else:
+
+        if role == '3':
             queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
             
         students = get_object_or_404(queryset, id=pk)
         serializer = self.serializer_class(students)
