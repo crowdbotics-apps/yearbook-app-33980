@@ -37,6 +37,17 @@ class StudentSerializer(serializers.ModelSerializer):
         except:
             return ""
 
+class SchoolAdminSerializer(serializers.ModelSerializer):
+    high_school_id = serializers.IntegerField(write_only=True)
+    high_school = HighSchoolSerializer()
+
+    class Meta:
+        model = User
+        fields = ["id", "email", "name","lname","username","dob","high_school","high_school_id","address","zip_code","status","photo","role"]
+        extra_kwargs ={
+            'high_school_id':{'write_only': True},
+        }
+
 class HighSchoolIdSerializer(serializers.ModelSerializer):
     user = StudentSerializer(read_only=True)
     class Meta:

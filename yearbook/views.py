@@ -5,7 +5,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import CreditCards, HighSchool, HighSchoolID, PurchaseRecapp, Recapp, Messages
-from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, MessageSerializer,PurchaseRecappSerializer, RecappSerializer, StudentSerializer
+from .serializers import CreditCardsSerializer, HighSchoolIdSerializer, HighSchoolSerializer, MessageSerializer,PurchaseRecappSerializer, RecappSerializer, StudentSerializer,SchoolAdminSerializer
 from rest_framework.permissions import IsAuthenticated
 from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
@@ -268,7 +268,7 @@ class AnalyticsAPIView(APIView):
 class SchoolAdminsViewset(ModelViewSet):
     permission_classes = (IsAuthenticated,)
 
-    serializer_class = UserSerializer
+    serializer_class = SchoolAdminSerializer
     queryset = User.objects.filter(role=2)
 
     @action(detail=False, methods=["put"],url_path=r'approve/(?P<admin_id>\d+)')
