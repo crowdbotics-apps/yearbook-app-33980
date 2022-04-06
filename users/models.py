@@ -65,6 +65,7 @@ class User(AbstractUser):
         choices=USER_TYPE_CHOICES,
         default=1
     )
-
+    stripe_id = models.CharField(max_length=50)
+    
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})

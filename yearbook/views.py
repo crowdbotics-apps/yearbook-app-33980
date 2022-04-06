@@ -1,3 +1,4 @@
+from email import message
 from django.db.models import Count
 from home.api.v1.serializers import UserSerializer
 from users.models import User
@@ -189,20 +190,6 @@ class PurchaseRecappViewSet(ModelViewSet):
         serializer = PurchaseRecappSerializer(purchase)
         return Response(serializer.data)
 
-    # def perform_create(self,serializer):
-    #     stripe.api_key = 'sk_test_51KeejWDUTAU1FowaGozzaiy2ghoEY9Eiiv7EiZrXYxuUdEPVffEyZbyjtO3KIrxFLb6VSTor3wKsVlWgcEzejJF2005omCIkWQ'
-
-    #     test_payment_intent = stripe.PaymentIntent.create(
-    #                             amount=1000, currency='usd', 
-    #                             payment_method_types=['card'],
-    #                             receipt_email='test@example.com',
-    #                             payment_method="4242 4242 4242 4242",
-    #                             confirm=True)
-    #     if(test_payment_intent):
-    #         serializer.save()
-    #     else:
-    #         serializer.save()
-
 class CreditCardsViewset(ModelViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = CreditCardsSerializer
@@ -286,13 +273,38 @@ class MessagesViewset(ModelViewSet):
     queryset = Messages.objects.all()
 
     def list(self, request):
-        queryset = Messages.objects.filter(receiver=request.user.id)
+        queryset_reciever = Messages.objects.filter(receiver=request.user.id)
+        queryset_sender = Messages.obejcts.filter(sender=request.user.id)
+
+        
+        queryset = queryset_reciever.union(queryset_sender)
+
         serializer = MessageSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def perform_create(self,serializer):
         return serializer.save(sender=self.request.user)
 
+    @action(detail=False, methods=["get"],url_path=r'chats')
+    def chats(self,request, *args, **kwargs):
+        role = request.user.role
+        senders = []
+        chats = Messages.objects.values('sender_id').distinct()
+        for s in chats:
+            s_temp = User.objects.get(id=s['sender_id'])
+            senders.append(s_temp)
+        
+        return Response(StudentSerializer(senders,many=True).data)
+
+    @action(detail=False, methods=["get"],url_path=r'(?P<student_id>\d+)')
+    def messages_by_user(self,request, *args, **kwargs):
+
+        queryset_reciever = Messages.objects.filter(receiver=request.user.id,sender=self.kwargs['student_id'])
+        queryset_sender = Messages.obejcts.filter(sender=request.user.id,receiver=self.kwargs['student_id'])
+        queryset = queryset_reciever.append(queryset_sender)
+
+        serializer =MessageSerializer(queryset,many=True)
+        return Response(serializer.data)
 
 class AnalyticsAPIView(APIView):
 

@@ -8,7 +8,7 @@ from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
 from rest_framework import serializers
 from rest_auth.serializers import PasswordResetSerializer
-
+import stripe
 
 User = get_user_model()
 
@@ -66,6 +66,11 @@ class SignupSerializer(serializers.ModelSerializer):
             status='pending'
         )
         user.set_password(validated_data.get("password"))
+        stripe.api_key ='sk_test_0DWe4zIoV0BxYBcLvxdPcbp9'
+
+        stripe_customer= stripe.Customer.create()
+        user.stripe_id = stripe_customer.id
+
         user.save()
         request = self._get_request()
         setup_user_email(request, user, [])
@@ -79,7 +84,8 @@ class SignupSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code","status","photo","role"]
+        fields = ["id", "email", "name","lname","username","dob","high_school","address","zip_code","status","photo","role","stripe_id"]
+        
 
 
 class PasswordSerializer(PasswordResetSerializer):

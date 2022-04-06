@@ -11,7 +11,7 @@ from .views import (
     StudentsViewset,
     MessagesViewset,
     SchoolAdminsViewset,
-    YearbookCommitteeViewset
+    YearbookCommitteeViewset,
     )
 
 router = DefaultRouter()
@@ -24,7 +24,6 @@ router.register(r'students',StudentsViewset, basename="students")
 router.register(r'messages',MessagesViewset, basename="messages")
 router.register(r'school_admins',SchoolAdminsViewset,basename="school_admins")
 router.register(r'committee',YearbookCommitteeViewset,basename="yearbook_committee")
-
 urlpatterns = [
     path("",include(router.urls)),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),

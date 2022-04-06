@@ -13,6 +13,8 @@ from .models import (
 
 from users.models import User
 from home.api.v1.serializers import UserSerializer
+import stripe
+import json 
 
 class HighSchoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,11 +28,12 @@ class StudentSerializer(serializers.ModelSerializer):
     on_committee = serializers.SerializerMethodField('is_on_committee')
     class Meta:
         model = User
-        fields = ["id", "email", "name","lname","username","dob","high_school","high_school_id","address","zip_code","status","photo","high_school_code","role","on_committee"]
+        fields = ["id", "email", "name","lname","username","dob","high_school","high_school_id","address","zip_code","status","photo","high_school_code","role","on_committee","stripe_id"]
         extra_kwargs ={
             'high_school_code':{'read_only':True},
             'high_school_id':{'write_only': True},
-            'on_committee': {'read_only':True}
+            'on_committee': {'read_only':True},
+            'stripe_id': {'read_only':True}
         }
     def get_high_school_code(self,student):
         try:
@@ -91,7 +94,7 @@ class RecappSerializer(serializers.ModelSerializer):
     class Meta:
         model=Recapp
         fields=['id','user','high_school','high_school_id','recapp','recapp_cover','price','recapp_year','zip_code','status']
-        
+
         extra_kwargs ={
             'user':{'read_only':True},
             'status':{'read_only':True},
@@ -156,10 +159,34 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
         card_number = validated_data.pop('card_number')
         cardholder_name = validated_data.pop('cardholder_name')
 
-        CreditCards.objects.create(first_name=first_name,last_name=last_name,cvc=cvc,expiry=expiry,card_number=card_number,cardholder_name=cardholder_name,user=user)
+        stripe.api_key = 'sk_test_0DWe4zIoV0BxYBcLvxdPcbp9'
 
-        purchase = PurchaseRecapp.objects.create(user=user,**validated_data,status='done')
-        
+        payment_method = stripe.PaymentMethod.create(
+        type="card",
+        card={
+            "number":card_number,
+            "exp_month": expiry.strftime("%m"),
+            "exp_year":  expiry.strftime("%y"),
+            "cvc": cvc,
+        },
+        )
+
+        print(expiry.strftime("%m"))
+        stripe.PaymentMethod.attach(payment_method.id,customer=user.stripe_id)
+
+        pm_intent = stripe.PaymentIntent.create(
+            customer=user.stripe_id,
+            amount=2000,
+            currency="usd",
+            payment_method_types=["card"],
+            payment_method=payment_method.id,
+            confirm=True
+        )
+
+        if(pm_intent.status == "succeeded"):
+            purchase = PurchaseRecapp.objects.create(user=user,**validated_data,status='done')
+        else:
+            purchase = PurchaseRecapp.objects.create(user=user,**validated_data,status='failed')
         return purchase
 
 class CreditCardsSerializer(serializers.ModelSerializer):
