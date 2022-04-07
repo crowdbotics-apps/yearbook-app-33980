@@ -362,7 +362,7 @@ class MessagesViewset(ModelViewSet):
             #Custom Chat Object
             chat_obj = {
                 "user_id":s_temp.id,
-                "name":s_temp.name+' '+s_temp.lname,
+                "name":str(s_temp.name)+' '+str(s_temp.lname),
                 "photo":user_photo,
                 "recent_message":recent_message.text,
                 "created_at":recent_message.created_at
