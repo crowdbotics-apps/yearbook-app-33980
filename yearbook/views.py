@@ -258,7 +258,7 @@ class CardsListAPIView(APIView):
         card_details = stripe.Customer.create_source(user.stripe_id,source=token)
 
         return Response(card_details)
-        
+
     def get(self, request):
 
         user = request.user
@@ -360,8 +360,8 @@ class MessagesViewset(ModelViewSet):
     def messages_by_user(self,request, *args, **kwargs):
 
         queryset_reciever = Messages.objects.filter(receiver=request.user.id,sender=self.kwargs['student_id'])
-        queryset_sender = Messages.obejcts.filter(sender=request.user.id,receiver=self.kwargs['student_id'])
-        queryset = queryset_reciever.append(queryset_sender)
+        queryset_sender = Messages.objects.filter(sender=request.user.id,receiver=self.kwargs['student_id'])
+        queryset = queryset_reciever.union(queryset_sender)
 
         serializer =MessageSerializer(queryset,many=True)
         return Response(serializer.data)
