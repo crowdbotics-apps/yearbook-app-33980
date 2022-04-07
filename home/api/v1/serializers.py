@@ -9,6 +9,7 @@ from allauth.account.utils import setup_user_email
 from rest_framework import serializers
 from rest_auth.serializers import PasswordResetSerializer
 import stripe
+from django.conf import settings
 
 User = get_user_model()
 
@@ -66,7 +67,7 @@ class SignupSerializer(serializers.ModelSerializer):
             status='pending'
         )
         user.set_password(validated_data.get("password"))
-        stripe.api_key ='sk_test_0DWe4zIoV0BxYBcLvxdPcbp9'
+        stripe.api_key = settings.STRIPE_SECRET_KEY
 
         stripe_customer= stripe.Customer.create()
         user.stripe_id = stripe_customer.id

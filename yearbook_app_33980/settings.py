@@ -299,9 +299,10 @@ REST_FRAMEWORK = {
 
 if DEBUG:
     STRIPE_PUBLISHABLE_KEY = 'pk_test_51KeejWDUTAU1FowaL9TkmlkNtHdvG2f1OwLKiX5dqlpFNmU0yutykFC6X2cmRh3S0TT5hKD9pzTxVa57O2jcBuMf00Mhz81zzT'
-    STRIPE_SECRET_KEY = 'sk_test_51KeejWDUTAU1FowaGozzaiy2ghoEY9Eiiv7EiZrXYxuUdEPVffEyZbyjtO3KIrxFLb6VSTor3wKsVlWgcEzejJF2005omCIkWQy'
+    STRIPE_SECRET_KEY = 'sk_test_0DWe4zIoV0BxYBcLvxdPcbp9'
 else:
     STRIPE_PUBLISHABLE_KEY = 'pk_test_51KeejWDUTAU1FowaL9TkmlkNtHdvG2f1OwLKiX5dqlpFNmU0yutykFC6X2cmRh3S0TT5hKD9pzTxVa57O2jcBuMf00Mhz81zzT'
-    STRIPE_SECRET_KEY = 'sk_test_51KeejWDUTAU1FowaGozzaiy2ghoEY9Eiiv7EiZrXYxuUdEPVffEyZbyjtO3KIrxFLb6VSTor3wKsVlWgcEzejJF2005omCIkWQy'
+    STRIPE_SECRET_KEY = 'sk_test_0DWe4zIoV0BxYBcLvxdPcbp9'
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+

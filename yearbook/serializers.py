@@ -13,8 +13,8 @@ from .models import (
 
 from users.models import User
 from home.api.v1.serializers import UserSerializer
+from django.conf import settings
 import stripe
-import json 
 
 class HighSchoolSerializer(serializers.ModelSerializer):
     class Meta:
@@ -159,27 +159,28 @@ class PurchaseRecappSerializer(serializers.ModelSerializer):
         card_number = validated_data.pop('card_number')
         cardholder_name = validated_data.pop('cardholder_name')
 
-        stripe.api_key = 'sk_test_0DWe4zIoV0BxYBcLvxdPcbp9'
+        stripe.api_key = settings.STRIPE_SECRET_KEY
 
-        payment_method = stripe.PaymentMethod.create(
-        type="card",
-        card={
-            "number":card_number,
-            "exp_month": expiry.strftime("%m"),
-            "exp_year":  expiry.strftime("%y"),
-            "cvc": cvc,
-        },
-        )
+        token = stripe.Token.create(
+            card={
+                "name":cardholder_name,
+                "number": card_number,
+                "exp_month": expiry.strftime("%m"),
+                "exp_year": expiry.strftime("%y"),
+                "cvc": cvc,
+            },
+            )
+        card_details = stripe.Customer.create_source(user.stripe_id,source=token)
 
         print(expiry.strftime("%m"))
-        stripe.PaymentMethod.attach(payment_method.id,customer=user.stripe_id)
+        stripe.PaymentMethod.attach(card_details.id,customer=user.stripe_id)
 
         pm_intent = stripe.PaymentIntent.create(
             customer=user.stripe_id,
             amount=2000,
             currency="usd",
             payment_method_types=["card"],
-            payment_method=payment_method.id,
+            payment_method=card_details.id,
             confirm=True
         )
 

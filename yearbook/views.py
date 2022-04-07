@@ -19,6 +19,7 @@ from rest_framework.decorators import action
 import stripe
 from datetime import datetime, timedelta
 from django.core.mail import send_mail
+from django.conf import settings
 
 class HighSchoolIdViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -205,6 +206,65 @@ class CreditCardsViewset(ModelViewSet):
         purchase = get_object_or_404(queryset, id=pk)
         serializer = CreditCardsSerializer(purchase)
         return Response(serializer.data)
+
+
+class CardsDetailAPIView(APIView):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    def get(self, request,pk):
+
+        user = request.user
+        user_stripe_id = user.stripe_id
+
+        card =stripe.Customer.retrieve_source(
+        user_stripe_id,
+        pk,
+        )
+        return Response(card)
+
+    def post(self,request):
+        user = request.user
+        token = stripe.Token.create(
+            card={
+                "name":"Swornim Shrestha",
+                "number": "4242424242424242",
+                "exp_month": 4,
+                "exp_year": 2023,
+                "cvc": "314",
+            },
+            )
+        card_details = stripe.Customer.create_source(user.stripe_id,source=token)
+
+        return Response(card_details)
+
+    def update(self,request,pk):
+        user = request.user
+        user_stripe_id = user.stripe_id
+        
+        card = stripe.Customer.delete_source(
+        user_stripe_id,
+        pk,
+        )
+
+        return Response(card)
+
+    def delete(self,request,pk):
+        user = request.user
+        user_stripe_id = user.stripe_id
+        card = stripe.Customer.delete_source(
+        user_stripe_id,
+        pk,
+        )
+
+        return Response(card)
+
+class CardsListAPIView(APIView):
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    def get(self, request):
+
+        user = request.user
+        user_stripe_id = user.stripe_id
+        sources = stripe.Customer.list_sources(user_stripe_id,object="card")
+        return Response(sources)
 
 class StudentsViewset(ModelViewSet):
     permission_classes = (IsAuthenticated,)
