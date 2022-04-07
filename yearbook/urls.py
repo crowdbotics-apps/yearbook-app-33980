@@ -31,6 +31,6 @@ urlpatterns = [
     path("",include(router.urls)),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
     path(r'analytics/',AnalyticsAPIView.as_view()),
-    path(r'cards/',CardsListAPIView.as_view()),
-    path(r'cards/<str:pk>',CardsDetailAPIView.as_view())
+    path(r'cards/<str:pk>',CardsDetailAPIView.as_view()),
+    path(r'cards/',CardsListAPIView.as_view())
 ]
