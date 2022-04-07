@@ -349,12 +349,26 @@ class MessagesViewset(ModelViewSet):
     def chats(self,request, *args, **kwargs):
         role = request.user.role
         senders = []
-        chats = Messages.objects.values('sender_id').distinct()
+        chats = Messages.objects.values('sender_id').filter(receiver=request.user).distinct()
         for s in chats:
             s_temp = User.objects.get(id=s['sender_id'])
-            senders.append(s_temp)
-        
-        return Response(StudentSerializer(senders,many=True).data)
+            recent_message = Messages.objects.filter(sender=s['sender_id'],receiver=request.user).last()
+            #Check if user has uploaded Photo
+            if s_temp.photo:
+                user_photo = s_temp.photo
+            else:
+                user_photo = ""
+
+            #Custom Chat Object
+            chat_obj = {
+                "user":s_temp.id,
+                "photo":user_photo,
+                "recent_message":recent_message.text,
+                "created_at":recent_message.created_at
+            }
+            senders.append(chat_obj)
+
+        return Response(senders)
 
     @action(detail=False, methods=["get"],url_path=r'(?P<student_id>\d+)')
     def messages_by_user(self,request, *args, **kwargs):

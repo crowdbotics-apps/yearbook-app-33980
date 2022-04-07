@@ -33,7 +33,7 @@ class StudentSerializer(serializers.ModelSerializer):
             'high_school_code':{'read_only':True},
             'high_school_id':{'write_only': True},
             'on_committee': {'read_only':True},
-            'stripe_id': {'read_only':True}
+            'stripe_id': {'write_only':True}
         }
     def get_high_school_code(self,student):
         try:
