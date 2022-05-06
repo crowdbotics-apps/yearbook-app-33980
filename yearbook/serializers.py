@@ -239,4 +239,4 @@ class YearbookCommitteeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = YearbookCommittee
-        fields = ['id','user','high_school','user_id']
+        fields = ['id','user','high_school','user_id','status']
