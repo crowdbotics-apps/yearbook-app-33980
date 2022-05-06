@@ -11,13 +11,17 @@ from rest_auth.serializers import PasswordResetSerializer
 import stripe
 from django.conf import settings
 
+from yearbook.models import YearbookCommittee
+
 User = get_user_model()
 
 
 class SignupSerializer(serializers.ModelSerializer):
+    in_committee = serializers.BooleanField(write_only=True)
+
     class Meta:
         model = User
-        fields = ["id", "email","password","name","lname","username","dob","high_school","address","zip_code","status","photo","role"]
+        fields = ["id", "email","password","name","lname","username","dob","high_school","address","zip_code","status","photo","role","in_committee"]
         extra_kwargs = {
             "password": {"write_only": True, "style": {"input_type": "password"}},
             "status":{"read_only":True}
@@ -50,7 +54,15 @@ class SignupSerializer(serializers.ModelSerializer):
             )
         return username
 
+        
     def create(self, validated_data):
+
+        if(validated_data.get("role") == 1):
+            if User.objects.filter(high_school=validated_data.get('high_school'),role=2).count() == 0:
+                raise serializers.ValidationError(
+                    _("Not admin found for this school")
+                )
+            
         user = User(
             email=validated_data.get("email"),
             name=validated_data.get("name"),
@@ -66,6 +78,7 @@ class SignupSerializer(serializers.ModelSerializer):
             role=validated_data.get("role"),
             status='pending'
         )
+        
         user.set_password(validated_data.get("password"))
         stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -73,6 +86,10 @@ class SignupSerializer(serializers.ModelSerializer):
         user.stripe_id = stripe_customer.id
 
         user.save()
+
+        if user.role == 1 and validated_data.get("in_committee") == True:
+            YearbookCommittee.objects.create(user=user,high_school=user.high_school)
+
         request = self._get_request()
         setup_user_email(request, user, [])
         return user

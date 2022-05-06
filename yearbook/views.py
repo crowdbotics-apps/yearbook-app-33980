@@ -498,3 +498,42 @@ class YearbookCommitteeViewset(ModelViewSet):
         serializer = self.serializer_class(user)
         user.delete()
         return Response(serializer.data)
+
+    @action(detail=False, methods=["put"],url_path=r'approve/(?P<request_id>\d+)')
+    def approve(self,request, *args, **kwargs):
+        committee_request = self.queryset.get(id=self.kwargs['request_id'])
+        committee_request.status="approved"
+        committee_request.save()
+        seriralizer = self.serializer_class(committee_request)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["put"],url_path=r'reject/(?P<request_id>\d+)')
+    def reject(self,request, *args, **kwargs):
+        committee_request = self.queryset.get(id=self.kwargs['request_id'])
+        committee_request.status="rejected"
+        committee_request.save()
+
+        if request.method == "PUT":
+            message = request.data["message"]
+            send_mail(
+                'Your Committee request has been rejected',
+                message,
+                'swornim.shrestha@crowdbotics.com',
+                ['srestaswrnm@gmail.com'],
+                fail_silently=False,
+            )
+        seriralizer = self.serializer_class(committee_request)
+        return Response(seriralizer.data)
+
+    @action(detail=False, methods=["get"],url_path=r'pending')
+    def pending(self,request, *args, **kwargs):
+        role = request.user.role
+
+        if role == '3':
+            queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(high_school=request.user.high_school)
+
+        committee_requests = queryset.filter(status="pending")
+        seriralizer = self.serializer_class(committee_requests,many=True)
+        return Response(seriralizer.data)
