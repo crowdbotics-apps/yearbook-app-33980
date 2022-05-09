@@ -128,7 +128,7 @@ class RecappViewSet(ModelViewSet):
         recapp.status="rejected"
         recapp.save()
         if request.method == "PUT":
-            message = request.data["message"]
+            message = request.data.get("message")
             send_mail(
                 'Your Recapp has been rejected',
                 message,
@@ -514,7 +514,7 @@ class YearbookCommitteeViewset(ModelViewSet):
         committee_request.save()
 
         if request.method == "PUT":
-            message = request.data["message"]
+            message = request.data.get("message")
             send_mail(
                 'Your Committee request has been rejected',
                 message,

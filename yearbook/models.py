@@ -6,11 +6,12 @@ def code_generator():
 
 class HighSchool(models.Model):
     name = models.CharField(max_length=30)
+    code = models.CharField(max_length=16,default=code_generator)
 
 class HighSchoolID(models.Model):
     user = models.ForeignKey('users.User',on_delete=models.CASCADE)
     file = models.FileField(blank=True,default='')
-    code = models.CharField(max_length=16,default=code_generator)
+    code = models.CharField(max_length=16,blank=True,null=True)
     status = models.CharField(max_length=16,default='pending')
 
 class Recapp(models.Model):
