@@ -1,3 +1,4 @@
+from wsgiref import validate
 from django.contrib.auth import get_user_model
 from django.http import HttpRequest
 from django.utils.translation import ugettext_lazy as _
@@ -62,7 +63,13 @@ class SignupSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     _("Not admin found for this school")
                 )
-            
+        
+        if(validated_data.get("role") == 2):
+           if validated_data.get("email").find(".edu") == -1:
+                raise serializers.ValidationError(
+                    _("Must be .edu email for school admins")
+                ) 
+
         user = User(
             email=validated_data.get("email"),
             name=validated_data.get("name"),
