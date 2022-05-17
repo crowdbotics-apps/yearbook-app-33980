@@ -436,13 +436,13 @@ class SchoolAdminsViewset(ModelViewSet):
     @action(detail=False, methods=["get"],url_path=r'pending')
     def pending(self,request, *args, **kwargs):
         role = request.user.role
+        queryset = self.queryset
 
-        if role == '3':
-            queryset = self.queryset
-        else:
-            queryset = self.queryset.filter(high_school=request.user.high_school)
-        recapps = queryset.filter(status="pending")
-        seriralizer = self.serializer_class(recapps,many=True)
+        if role != 3:
+            return Response({'message':'Unauthorized'},status=401)
+
+        school_admins = queryset.filter(status="pending")
+        seriralizer = self.serializer_class(school_admins,many=True)
         return Response(seriralizer.data)
 
     @action(detail=False, methods=["get"],url_path=r'rejected')
